@@ -11,4 +11,5 @@
   <field name="account"/>
   <field name="origin"/>
   <field name="managed"/>
+  <field name="company" tree_invisible="1"/>
 </tree>

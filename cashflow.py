@@ -19,12 +19,10 @@ class CashFlowMove(ModelSQL, ModelView):
     'Cash Flow Move'
     __name__ = 'account.cashflow.move'
 
-    # TODO: Missing company field and access rules
     issue_date = fields.Date('Date', required=True)
     planned_date = fields.Date('Planned Date', required=True)
     description = fields.Char('Description')
     bank_account = fields.Many2One('account.account', 'Bank Account')
-    # Use currency digits instead of plain digits=(16, 2)
     amount = fields.Numeric('Amount', required=True, digits=(16, 2))
     party = fields.Many2One(
         'party.party',
@@ -41,7 +39,7 @@ class CashFlowMove(ModelSQL, ModelView):
     managed = fields.Boolean('Managed', readonly=True)
     # company field added because of access permission rules
     # (see file account_cashflow/cashflow.xml)
-    company = fields.Many2One('company.company', 'Company')
+    company = fields.Many2One('company.company', 'Company', required=True)
 
     @classmethod
     def _get_origin(cls):
@@ -97,17 +95,22 @@ class CashFlowUpdate(Wizard):
         bank_accounts = BankAccount.search([('account', '!=', None)])
         with Transaction().set_context():
             accounts = Account.search([
-                ('id', 'in', [x.account.id for x in bank_accounts])
+                ('id', 'in',
+                [bank_account.account.id for bank_account in bank_accounts])
             ])
+
+        moves = []
+
         for account in accounts:
             move = CashFlowMove()
             move.issue_date = self.start.date - 1
             move.planned_date = self.start.date - 1
+            move.bank_account = account
             move.amount = account.balance
             move.managed = True
-            # ...
+            move.company = account.company
+            moves.append(move)
 
-        moves = []
         for line in MoveLine.search(
                 [('maturity_date', '>=', self.start.date)]):
             move = CashFlowMove()
@@ -122,7 +125,9 @@ class CashFlowUpdate(Wizard):
             move.account = line.account
             move.origin = line
             move.managed = True
+            move.company = line.move.company
             moves.append(move)
+
         CashFlowMove.create([x._save_values for x in moves])
         return 'end'
 
@@ -142,7 +147,6 @@ class CashFlowLineForecast(ModelSQL, ModelView):
     'Cash Flow Line Forecast'
     __name__ = 'account.cashflow.line.forecast'
 
-    # TODO: Missing company field and access rules
     planned_date = fields.Date('Planned Date')
     issue_date = fields.Date('Date')
     description = fields.Char('Description')
@@ -159,9 +163,10 @@ class CashFlowLineForecast(ModelSQL, ModelView):
         readonly=True,
         select=True, help='')
     managed = fields.Boolean('Managed')
-    # TODO: Use currency digits instead of plain digits=(16, 2)
     amount = fields.Numeric('Amount', digits=(16, 2))
     balance = fields.Numeric('Balance', digits=(16, 2))
+    #  company field added because of access permission rules
+    company = fields.Many2One('company.company', 'Company')
 
     @classmethod
     def __setup__(cls):
@@ -184,6 +189,14 @@ class CashFlowLineForecast(ModelSQL, ModelView):
     @classmethod
     def table_query(cls):
         pool = Pool()
+        User = pool.get('res.user')
+        user_id = Transaction().user
+        user = User(user_id)
+        if user.company:
+            company_id = Transaction().context.get('company', user.company.id)
+        else:
+            company_id = None
+
         CashFlowMove = pool.get('account.cashflow.move')
         cash_flow_move_table = CashFlowMove.__table__()
 
@@ -199,6 +212,7 @@ class CashFlowLineForecast(ModelSQL, ModelView):
                         cash_flow_move_table.id])).as_('balance')
         else:
             column_cumulate_by_account = cash_flow_move_table.amount
+
         columns = [
             cash_flow_move_table.id,
             cash_flow_move_table.write_uid,
@@ -207,6 +221,7 @@ class CashFlowLineForecast(ModelSQL, ModelView):
             cash_flow_move_table.create_date,
             cash_flow_move_table.issue_date.as_('issue_date'),
             cash_flow_move_table.planned_date.as_('planned_date'),
+            cash_flow_move_table.company,
             cash_flow_move_table.description.as_('description'),
             cash_flow_move_table.bank_account.as_('bank_account'),
             cash_flow_move_table.party.as_('party'),
@@ -217,4 +232,5 @@ class CashFlowLineForecast(ModelSQL, ModelView):
             column_cumulate_by_account
         ]
         select = cash_flow_move_table.select(*columns)
+        select.where = cash_flow_move_table.company == company_id
         return select
