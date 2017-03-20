@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<tryton>
+  <data>
+    <record model="ir.ui.view" id="bank_account_view_form">
+        <field name="model">bank.account</field>
+        <field name="name">bank_account_form</field>
+        <field name="inherit" ref="bank.bank_account_view_form"/>
+    </record>
+
+    <record model="ir.ui.view" id="bank_account_view_list">
+        <field name="model">bank.account</field>
+        <field name="name">bank_account_list</field>
+        <field name="inherit" ref="bank.bank_account_view_list"/>
+    </record>
+  </data>
+</tryton>

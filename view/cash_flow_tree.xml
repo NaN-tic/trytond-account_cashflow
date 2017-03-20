@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<tree string="Cash Flow Move">
+  <field name="issue_date"/>
+  <field name="planned_date"/>
+  <field name="description"/>
+  <field name="bank_account"/>
+  <field name="amount"/>
+  <field name="party"/>
+  <field name="party_required"/>
+  <field name="account"/>
+  <field name="origin"/>
+  <field name="managed"/>
+</tree>

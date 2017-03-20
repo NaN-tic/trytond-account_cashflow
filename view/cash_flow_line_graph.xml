@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<graph string="Cash Flow Line Forecast" type="line">
+<x>
+    <field name="planned_date"/>
+</x>
+<y>
+    <field name="balance" empty="0" interpolation="constant-left" fill="1"/>
+</y>
+</graph>

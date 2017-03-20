@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+
+<tryton>
+  <data>
+
+    <record model="ir.ui.view" id="cash_flow_view_form">
+        <field name="model">account.cashflow.move</field>
+        <field name="type">form</field>
+        <field name="name">cash_flow_form</field>
+    </record>
+
+    <record model="ir.ui.view" id="cash_flow_view_tree">
+        <field name="model">account.cashflow.move</field>
+        <field name="type">tree</field>
+        <field name="name">cash_flow_tree</field>
+    </record>
+
+    <record model="ir.action.act_window" id="act_cash_move_reports_form">
+        <field name="name">Cash Flow Move Reports</field>
+        <field name="res_model">account.cashflow.move</field>
+    </record>
+
+    <record model="ir.action.act_window.view" id="act_cash_flow_tree">
+        <field name="sequence" eval="10"/>
+        <field name="view" ref="cash_flow_view_tree"/>
+        <field name="act_window" ref="act_cash_move_reports_form"/>
+    </record>
+
+    <record model="ir.action.act_window.view" id="act_cash_flow_form">
+        <field name="sequence" eval="20"/>
+        <field name="view" ref="cash_flow_view_form"/>
+        <field name="act_window" ref="act_cash_move_reports_form"/>
+    </record>
+
+    <!-- Menu Cash Flow Move & Cash Flow Move Reports -->
+    <menuitem parent="account.menu_account" id="menu_cash_flow_move"
+      name="Cash Flow Move" sequence="10"/>
+
+    <menuitem parent="menu_cash_flow_move" action="act_cash_move_reports_form"
+      id="menu_cash_flow_move_reports" name="Cash Flow Move Reports"/>
+
+    <!-- Wizard Update cash flow -->
+    <record model="ir.action.wizard" id="act_account_cashflowmove_update">
+        <field name="name">Account Cash Flow Update</field>
+        <field name="wiz_name">account.cashflow.move.update</field>
+    </record>
+
+    <record model="ir.ui.view"
+        id="move_update_start_view_form">
+        <field name="model">account.cashflow.move.update.start</field>
+        <field name="type">form</field>
+        <field name="name">account_cashflow_move_update_start_form</field>
+    </record>
+
+    <menuitem parent="menu_cash_flow_move" sequence="20"
+        action="act_account_cashflowmove_update"
+        id="menu_cash_flow_move_update"/>
+
+    <!-- Access Rules Wizard CashFlowUpdate -->
+
+    <record model="ir.rule.group" id="rule_group_cash_flow_report">
+        <field name="model"
+            search="[('model', '=', 'account.cashflow.move')]"/>
+        <field name="global_p" eval="True"/>
+    </record>
+
+    <record model="ir.rule" id="rule_cash_flow_report">
+        <field name="domain"
+            eval="[('company', '=', Eval('user', {}).get('company', None))]"
+            pyson="1"/>
+        <field name="rule_group" ref="rule_group_cash_flow_report"/>
+    </record>
+
+    <!--
+    CashFlowLineForecast (account.cashflow.line.forecast)
+    CashFlowLineForecastContext (account.cashflow.line.forecast)
+    -->
+    <record model="ir.ui.view" id="cash_flow_line_view_tree">
+        <field name="model">account.cashflow.line.forecast</field>
+        <field name="type">tree</field>
+        <field name="name">cash_flow_line_tree</field>
+    </record>
+    <record model="ir.ui.view" id="cash_flow_line_view_graph">
+        <field name="model">account.cashflow.line.forecast</field>
+        <field name="type">graph</field>
+        <field name="name">cash_flow_line_graph</field>
+    </record>
+    <record model="ir.ui.view" id="cash_flow_line_view_amount_graph">
+        <field name="model">account.cashflow.line.forecast</field>
+        <field name="type">graph</field>
+        <field name="name">cash_flow_line_amount_graph</field>
+    </record>
+
+    <record model="ir.ui.view" id="cash_flow_line_forecast_context_view_form">
+        <field name="model">account.cashflow.line.forecast.context</field>
+        <field name="type">form</field>
+        <field name="name">cash_flow_line_forecast_context_form</field>
+    </record>
+
+    <record model="ir.action.act_window" id="act_cash_flow_line_forecast">
+        <field name="name">Cash Flow Line Forecast</field>
+        <field name="res_model">account.cashflow.line.forecast</field>
+        <field name="context_model">account.cashflow.line.forecast.context</field>
+        <field name="search_value"
+            eval="[('planned_date', '>=', DateTime(hour=0, minute=0, second=0, microsecond=0))]"
+            pyson="1"/>
+    </record>
+
+    <record model="ir.action.act_window.view" id="act_cash_flow_line_tree">
+        <field name="sequence" eval="10"/>
+        <field name="view" ref="cash_flow_line_view_tree"/>
+        <field name="act_window" ref="act_cash_flow_line_forecast"/>
+    </record>
+    <record model="ir.action.act_window.view" id="act_cash_flow_line_graph">
+        <field name="sequence" eval="20"/>
+        <field name="view" ref="cash_flow_line_view_graph"/>
+        <field name="act_window" ref="act_cash_flow_line_forecast"/>
+    </record>
+    <record model="ir.action.act_window.view" id="act_cash_flow_line_amount_graph">
+        <field name="sequence" eval="30"/>
+        <field name="view" ref="cash_flow_line_view_amount_graph"/>
+        <field name="act_window" ref="act_cash_flow_line_forecast"/>
+    </record>
+
+    <menuitem parent="menu_cash_flow_move" sequence="30"
+        action="act_cash_flow_line_forecast"
+        id="menu_cash_flow_line_forecast"/>
+  </data>
+</tryton>

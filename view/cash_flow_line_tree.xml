@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<tree string="Cash Flow Line Forecast">
+  <field name="planned_date"/>
+  <field name="issue_date"/>
+  <field name="description"/>
+  <field name="bank_account"/>
+  <field name="party"/>
+  <field name="account"/>
+  <field name="origin"/>
+  <field name="managed"/>
+  <field name="amount"/>
+  <field name="balance"/>
+</tree>
