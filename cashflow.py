@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
 
 from sql.aggregate import Sum
 from sql import Window
@@ -103,9 +104,10 @@ class CashFlowUpdate(Wizard):
 
         for account in accounts:
             move = CashFlowMove()
-            move.issue_date = self.start.date - 1
-            move.planned_date = self.start.date - 1
+            move.issue_date = self.start.date - timedelta(days=1)
+            move.planned_date = self.start.date - timedelta(days=1)
             move.bank_account = account
+            move.account = account
             move.amount = account.balance
             move.managed = True
             move.company = account.company
