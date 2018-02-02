@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-
+<!-- The COPYRIGHT file at the top level of this repository contains the full
+     copyright notices and license terms. -->
 <tryton>
   <data>
-
     <record model="ir.ui.view" id="cash_flow_view_form">
         <field name="model">account.cashflow.move</field>
         <field name="type">form</field>

@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
-
+<!-- The COPYRIGHT file at the top level of this repository contains the full
+     copyright notices and license terms. -->
 <tree string="Cash Flow Move">
-  <field name="issue_date"/>
-  <field name="planned_date"/>
-  <field name="description"/>
-  <field name="bank_account"/>
-  <field name="amount"/>
-  <field name="party"/>
-  <field name="party_required"/>
-  <field name="account"/>
-  <field name="origin"/>
-  <field name="managed"/>
-  <field name="company" tree_invisible="1"/>
+    <field name="issue_date"/>
+    <field name="planned_date"/>
+    <field name="description"/>
+    <field name="bank_account"/>
+    <field name="amount"/>
+    <field name="party"/>
+    <field name="party_required"/>
+    <field name="account"/>
+    <field name="origin"/>
+    <field name="managed"/>
+    <field name="company" tree_invisible="1"/>
 </tree>

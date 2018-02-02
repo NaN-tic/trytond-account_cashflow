@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+# This file is part of Tryton.  The COPYRIGHT file at the top level of this
+# repository contains the full copyright notices and license terms.
 from datetime import timedelta
-
 from sql.aggregate import Sum
 from sql import Window
-
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pyson import Eval
 from trytond.wizard import Wizard, StateTransition, StateView, Button
@@ -19,24 +19,19 @@ __all__ = ['CashFlowMove', 'CashFlowUpdateCalculate', 'CashFlowUpdate',
 class CashFlowMove(ModelSQL, ModelView):
     'Cash Flow Move'
     __name__ = 'account.cashflow.move'
-
     issue_date = fields.Date('Date', required=True)
     planned_date = fields.Date('Planned Date', required=True)
     description = fields.Char('Description')
     bank_account = fields.Many2One('account.account', 'Bank Account')
     amount = fields.Numeric('Amount', required=True, digits=(16, 2))
-    party = fields.Many2One(
-        'party.party',
-        'Party',
-        states={'invisible': ~Eval('party_required', False),
-        }, depends=['party_required'])
     party_required = fields.Boolean('Party Required')
+    party = fields.Many2One('party.party', 'Party',
+        states={
+            'invisible': ~Eval('party_required', False),
+        }, depends=['party_required'])
     account = fields.Many2One('account.account', 'Account', required=True)
-    origin = fields.Reference(
-        'Origin',
-        selection='get_origin',
-        readonly=True,
-        select=True, help='')
+    origin = fields.Reference('Origin', selection='get_origin', readonly=True,
+        select=True)
     managed = fields.Boolean('Managed', readonly=True)
     # company field added because of access permission rules
     # (see file account_cashflow/cashflow.xml)
@@ -148,22 +143,14 @@ class CashFlowLineForecastContext(ModelView):
 class CashFlowLineForecast(ModelSQL, ModelView):
     'Cash Flow Line Forecast'
     __name__ = 'account.cashflow.line.forecast'
-
     planned_date = fields.Date('Planned Date')
     issue_date = fields.Date('Date')
     description = fields.Char('Description')
     bank_account = fields.Many2One('account.account', 'Bank Account')
-    party = fields.Many2One(
-        'party.party',
-        'Party',
-        states={'invisible': ~Eval('party_required', False),
-        }, depends=['party_required'])
+    party = fields.Many2One('party.party', 'Party')
     account = fields.Many2One('account.account', 'Account')
-    origin = fields.Reference(
-        'Origin',
-        selection='get_origin',
-        readonly=True,
-        select=True, help='')
+    origin = fields.Reference('Origin', selection='get_origin', readonly=True,
+        select=True)
     managed = fields.Boolean('Managed')
     amount = fields.Numeric('Amount', digits=(16, 2))
     balance = fields.Numeric('Balance', digits=(16, 2))

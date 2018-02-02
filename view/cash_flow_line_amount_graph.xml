@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of this repository contains the full
+     copyright notices and license terms. -->
 <graph string="Cash Flow Line Forecast" type="vbar">
-<x>
+  <x>
     <field name="planned_date"/>
-</x>
-<y>
+  </x>
+  <y>
     <field name="amount" empty="0" fill="1"/>
-</y>
+  </y>
 </graph>
