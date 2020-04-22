@@ -2,7 +2,7 @@
 <!-- The COPYRIGHT file at the top level of this repository contains the full
      copyright notices and license terms. -->
 <data>
-  <xpath expr="/tree/field[@name='active']" position="after">
+  <xpath expr="/tree" position="inside">
       <field name="account"/>
   </xpath>
 </data>
