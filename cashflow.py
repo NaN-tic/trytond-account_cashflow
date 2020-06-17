@@ -5,8 +5,9 @@ from datetime import timedelta
 from sql.aggregate import Sum
 from sql import Window
 from trytond.model import ModelSQL, ModelView, fields
-from trytond.pyson import Eval
-from trytond.wizard import Wizard, StateTransition, StateView, Button
+from trytond.pyson import Bool, If, Eval, PYSONEncoder, Less
+from trytond.wizard import (Wizard, StateView, StateAction, StateTransition,
+    Button)
 from trytond.pool import Pool
 from trytond.transaction import Transaction
 from trytond import backend
@@ -24,7 +25,8 @@ class CashFlowMove(ModelSQL, ModelView):
     description = fields.Char('Description')
     bank_account = fields.Many2One('account.account', 'Bank Account')
     amount = fields.Numeric('Amount', required=True, digits=(16, 2))
-    party_required = fields.Boolean('Party Required')
+    party_required = fields.Function(fields.Boolean('Party Required'),
+        'get_party_required')
     party = fields.Many2One('party.party', 'Party',
         states={
             'invisible': ~Eval('party_required', False),
@@ -32,10 +34,41 @@ class CashFlowMove(ModelSQL, ModelView):
     account = fields.Many2One('account.account', 'Account', required=True)
     origin = fields.Reference('Origin', selection='get_origin', readonly=True,
         select=True)
-    managed = fields.Boolean('Managed', readonly=True)
-    # company field added because of access permission rules
-    # (see file account_cashflow/cashflow.xml)
-    company = fields.Many2One('company.company', 'Company', required=True)
+    system_computed = fields.Boolean('System Computed', readonly=True)
+    company = fields.Many2One('company.company', 'Company', required=True,
+        domain=[
+            ('id', If(Eval('context', {}).contains('company'), '=', '!='),
+                Eval('context', {}).get('company', -1)),
+            ],
+        select=True)
+    planned_date_less_today = fields.Function(
+        fields.Boolean('Planned Date Less Today'), 'get_planned_date_less_today')
+
+    @classmethod
+    def __setup__(cls):
+        super(CashFlowMove, cls).__setup__()
+        cls._order = [
+            ('planned_date', 'DESC'),
+            ('id', 'DESC'),
+            ]
+
+    @classmethod
+    def __register__(cls, module_name):
+        table = cls.__table_handler__(module_name)
+
+        # rename managed into system_computed
+        if (table.column_exist('managed')
+                and not table.column_exist('system_computed')):
+            table.column_rename('managed', 'system_computed')
+        super(CashFlowMove, cls).__register__(module_name)
+
+    @staticmethod
+    def default_issue_date():
+        return Pool().get('ir.date').today()
+
+    @staticmethod
+    def default_company():
+        return Transaction().context.get('company')
 
     @classmethod
     def _get_origin(cls):
@@ -50,14 +83,36 @@ class CashFlowMove(ModelSQL, ModelView):
             ('model', 'in', models)])
         return [('', '')] + [(m.model, m.name) for m in models]
 
+    @classmethod
+    def get_party_required(cls, cashes, name):
+        res = dict((x.id, False) for x in cashes)
+        for cash in cashes:
+            res[cash.id] = cash.account.party_required
+        return res
+
+    @classmethod
+    def get_planned_date_less_today(cls, cashes, name):
+        # PYSON LESS Date https://bugs.tryton.org/issue4879
+        Date = Pool().get('ir.date')
+        today = Date().today()
+        res = dict((x.id, False) for x in cashes)
+        for cash in cashes:
+            res[cash.id] = cash.planned_date < today
+        print(res)
+        return res
+
+    @classmethod
+    def view_attributes(cls):
+        return [
+            ('/tree', 'visual', If(Eval('planned_date_less_today'), 'danger', '')),
+            ]
+
 
 class CashFlowUpdateCalculate(ModelView):
     'Cash Flow Update'
     __name__ = 'account.cashflow.move.update.start'
     date = fields.Date('Date')
     invoices = fields.Boolean('Invoices')
-    sales = fields.Boolean('Sales')
-    purchases = fields.Boolean('Purchases')
 
     @staticmethod
     def default_date():
@@ -78,6 +133,7 @@ class CashFlowUpdate(Wizard):
             Button('Calculate', 'calculate', 'tryton-ok', default=True),
         ])
     calculate = StateTransition()
+    open_ = StateAction('account_cashflow.act_cash_move_reports_form')
 
     def transition_calculate(self):
         pool = Pool()
@@ -86,14 +142,12 @@ class CashFlowUpdate(Wizard):
         Account = pool.get('account.account')
         BankAccount = pool.get('bank.account')
 
-        CashFlowMove.delete(CashFlowMove.search([('managed', '=', True)]))
+        CashFlowMove.delete(CashFlowMove.search([('system_computed', '=', True)]))
 
-        bank_accounts = BankAccount.search([('account', '!=', None)])
+        bank_accounts_ids = [bank_account.account.id
+            for bank_account in BankAccount.search([('account', '!=', None)])]
         with Transaction().set_context():
-            accounts = Account.search([
-                ('id', 'in',
-                [bank_account.account.id for bank_account in bank_accounts])
-            ])
+            accounts = Account.search([('id', 'in', bank_accounts_ids)])
 
         moves = []
 
@@ -104,7 +158,7 @@ class CashFlowUpdate(Wizard):
             move.bank_account = account
             move.account = account
             move.amount = account.balance
-            move.managed = True
+            move.system_computed = True
             move.company = account.company
             moves.append(move)
 
@@ -121,23 +175,25 @@ class CashFlowUpdate(Wizard):
             move.party_required = line.party_required
             move.account = line.account
             move.origin = line
-            move.managed = True
+            move.system_computed = True
             move.company = line.move.company
             moves.append(move)
 
-        CashFlowMove.create([x._save_values for x in moves])
-        return 'end'
+        self.cash_flow_moves = CashFlowMove.create([
+            x._save_values for x in moves])
+        return 'open_'
+
+    def do_open_(self, action):
+        action['pyson_domain'] = PYSONEncoder().encode([
+                ('id', 'in', [x.id for x in self.cash_flow_moves]),
+                ])
+        return action, {}
 
 
 class CashFlowLineForecastContext(ModelView):
     'Cash Flow Line Forecast Context'
     __name__ = 'account.cashflow.line.forecast.context'
     cumulate_by_bank_account = fields.Boolean('Cumulate by Bank Account')
-
-# TODO: No permitir cambiar el orden de los registros a través de la interfaz
-# porqué:
-# - No tiene sentido el valor acumulado
-# - Da errores al cambiar de vista
 
 
 class CashFlowLineForecast(ModelSQL, ModelView):
@@ -151,16 +207,34 @@ class CashFlowLineForecast(ModelSQL, ModelView):
     account = fields.Many2One('account.account', 'Account')
     origin = fields.Reference('Origin', selection='get_origin', readonly=True,
         select=True)
-    managed = fields.Boolean('Managed')
+    system_computed = fields.Boolean('System Computed')
     amount = fields.Numeric('Amount', digits=(16, 2))
     balance = fields.Numeric('Balance', digits=(16, 2))
-    #  company field added because of access permission rules
-    company = fields.Many2One('company.company', 'Company')
+    company = fields.Many2One('company.company', 'Company', required=True,
+        domain=[
+            ('id', If(Eval('context', {}).contains('company'), '=', '!='),
+                Eval('context', {}).get('company', -1)),
+            ],
+        select=True)
+
+    @staticmethod
+    def default_company():
+        return Transaction().context.get('company')
 
     @classmethod
     def __setup__(cls):
         super(CashFlowLineForecast, cls).__setup__()
         cls._order.insert(0, ('planned_date', 'ASC'))
+
+    @classmethod
+    def __register__(cls, module_name):
+        table = cls.__table_handler__(module_name)
+
+        # rename managed into system_computed
+        if (table.column_exist('managed')
+                and not table.column_exist('system_computed')):
+            table.column_rename('managed', 'system_computed')
+        super(CashFlowLineForecast, cls).__register__(module_name)
 
     @classmethod
     def _get_origin(cls):
@@ -190,7 +264,7 @@ class CashFlowLineForecast(ModelSQL, ModelView):
         cash_flow_move_table = CashFlowMove.__table__()
 
         context = Transaction().context
-        if backend.name() == 'postgresql':
+        if backend.name == 'postgresql':
             w_columns = []
             if (context.get('cumulate_by_bank_account', False)):
                 w_columns.append(cash_flow_move_table.bank_account)
@@ -200,7 +274,7 @@ class CashFlowLineForecast(ModelSQL, ModelView):
                         cash_flow_move_table.planned_date.asc,
                         cash_flow_move_table.id])).as_('balance')
         else:
-            column_cumulate_by_account = cash_flow_move_table.amount
+            column_cumulate_by_account = cash_flow_move_table.amount.as_('balance')
 
         columns = [
             cash_flow_move_table.id,
@@ -217,9 +291,9 @@ class CashFlowLineForecast(ModelSQL, ModelView):
             cash_flow_move_table.amount.as_('amount'),
             cash_flow_move_table.account.as_('account'),
             cash_flow_move_table.origin.as_('origin'),
-            cash_flow_move_table.managed.as_('managed'),
+            cash_flow_move_table.system_computed.as_('system_computed'),
             column_cumulate_by_account
-        ]
+            ]
         select = cash_flow_move_table.select(*columns)
         select.where = cash_flow_move_table.company == company_id
         return select

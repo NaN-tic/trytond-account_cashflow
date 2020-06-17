@@ -4,13 +4,13 @@
 <tree>
     <field name="issue_date"/>
     <field name="planned_date"/>
-    <field name="description"/>
+    <field name="description" expand="2"/>
     <field name="bank_account"/>
     <field name="amount"/>
-    <field name="party"/>
-    <field name="party_required"/>
     <field name="account"/>
+    <field name="party" expand="2"/>
     <field name="origin"/>
-    <field name="managed"/>
+    <field name="system_computed"/>
     <field name="company" tree_invisible="1"/>
+    <field name="planned_date_less_today" tree_invisible="1"/>
 </tree>
