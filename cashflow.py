@@ -98,7 +98,6 @@ class CashFlowMove(ModelSQL, ModelView):
         res = dict((x.id, False) for x in cashes)
         for cash in cashes:
             res[cash.id] = cash.planned_date < today
-        print(res)
         return res
 
     @classmethod
