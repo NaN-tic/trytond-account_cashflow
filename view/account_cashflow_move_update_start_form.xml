@@ -6,8 +6,4 @@
     <field name="date"/>
     <label name="invoices"/>
     <field name="invoices"/>
-    <label name="sales"/>
-    <field name="sales"/>
-    <label name="purchases"/>
-    <field name="purchases"/>
 </form>
