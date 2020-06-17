@@ -1,0 +1,183 @@
+#
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:account.cashflow.line.forecast,account:"
+msgid "Account"
+msgstr "Compte"
+
+msgctxt "field:account.cashflow.line.forecast,amount:"
+msgid "Amount"
+msgstr "Import"
+
+msgctxt "field:account.cashflow.line.forecast,balance:"
+msgid "Balance"
+msgstr "Saldo"
+
+msgctxt "field:account.cashflow.line.forecast,bank_account:"
+msgid "Bank Account"
+msgstr "Comptes bancaris"
+
+msgctxt "field:account.cashflow.line.forecast,company:"
+msgid "Company"
+msgstr "Empresa"
+
+msgctxt "field:account.cashflow.line.forecast,description:"
+msgid "Description"
+msgstr "Descripció"
+
+msgctxt "field:account.cashflow.line.forecast,issue_date:"
+msgid "Date"
+msgstr "Data"
+
+msgctxt "field:account.cashflow.line.forecast,origin:"
+msgid "Origin"
+msgstr "Origen"
+
+msgctxt "field:account.cashflow.line.forecast,party:"
+msgid "Party"
+msgstr "Tercer"
+
+msgctxt "field:account.cashflow.line.forecast,planned_date:"
+msgid "Planned Date"
+msgstr "Data estimada"
+
+msgctxt "field:account.cashflow.line.forecast,system_computed:"
+msgid "System Computed"
+msgstr "Calculat pel sistema"
+
+msgctxt ""
+"field:account.cashflow.line.forecast.context,cumulate_by_bank_account:"
+msgid "Cumulate by Bank Account"
+msgstr "Acumular per comptes bancari"
+
+msgctxt "field:account.cashflow.move,account:"
+msgid "Account"
+msgstr "Compte"
+
+msgctxt "field:account.cashflow.move,amount:"
+msgid "Amount"
+msgstr "Importe"
+
+msgctxt "field:account.cashflow.move,bank_account:"
+msgid "Bank Account"
+msgstr "Comptes bancaris"
+
+msgctxt "field:account.cashflow.move,company:"
+msgid "Company"
+msgstr "Empresa"
+
+msgctxt "field:account.cashflow.move,description:"
+msgid "Description"
+msgstr "Descripció"
+
+msgctxt "field:account.cashflow.move,issue_date:"
+msgid "Date"
+msgstr "Data"
+
+msgctxt "field:account.cashflow.move,origin:"
+msgid "Origin"
+msgstr "Origen"
+
+msgctxt "field:account.cashflow.move,party:"
+msgid "Party"
+msgstr "Tercer"
+
+msgctxt "field:account.cashflow.move,party_required:"
+msgid "Party Required"
+msgstr "Tercer requerit"
+
+msgctxt "field:account.cashflow.move,planned_date:"
+msgid "Planned Date"
+msgstr "Data estimada"
+
+msgctxt "field:account.cashflow.move,planned_date_less_today:"
+msgid "Planned Date Less Today"
+msgstr "Data estimada menor a avui"
+
+msgctxt "field:account.cashflow.move,system_computed:"
+msgid "System Computed"
+msgstr "Calculat pel sistema"
+
+msgctxt "field:account.cashflow.move.update.start,date:"
+msgid "Date"
+msgstr "Data"
+
+msgctxt "field:account.cashflow.move.update.start,invoices:"
+msgid "Invoices"
+msgstr "Factures"
+
+msgctxt "field:bank.account,account:"
+msgid "Account"
+msgstr "Compte"
+
+msgctxt "model:account.cashflow.line.forecast,name:"
+msgid "Cash Flow Line Forecast"
+msgstr "Previsió flux de caixa"
+
+msgctxt "model:account.cashflow.line.forecast.context,name:"
+msgid "Cash Flow Line Forecast Context"
+msgstr "Context previsió flux de caixa"
+
+msgctxt "model:account.cashflow.move,name:"
+msgid "Cash Flow Move"
+msgstr "Moviments flux de caixa"
+
+msgctxt "model:account.cashflow.move.update.start,name:"
+msgid "Cash Flow Update"
+msgstr "Actualitza movuments flux de caixa"
+
+msgctxt "model:ir.action,name:act_account_cashflowmove_update"
+msgid "Account Cash Flow Update"
+msgstr "Actualitza flux de caixa"
+
+msgctxt "model:ir.action,name:act_cash_flow_line_forecast"
+msgid "Cash Flow Line Forecast"
+msgstr "Previsió flux de caixa"
+
+msgctxt "model:ir.action,name:act_cash_move_reports_form"
+msgid "Cash Flow Move Reports"
+msgstr "Informes moviments flux de caixa"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_cash_move_reports_form_domain_all"
+msgid "All"
+msgstr "Tots"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_cash_move_reports_form_domain_system_computed"
+msgid "System Computed"
+msgstr "Calculat pel sistema"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_cash_move_reports_form_domain_user_computed"
+msgid "User Computed"
+msgstr "Creat per l'usuari"
+
+msgctxt "model:ir.rule.group,name:rule_group_cash_flow_report"
+msgid "Cashflow Move"
+msgstr "Moviments flux de caixa"
+
+msgctxt "model:ir.ui.menu,name:menu_cash_flow_line_forecast"
+msgid "Cash Flow Line Forecast"
+msgstr "Previsió flux de caixa"
+
+msgctxt "model:ir.ui.menu,name:menu_cash_flow_move"
+msgid "Cash Flow Move"
+msgstr "Moviments flux de caixa"
+
+msgctxt "model:ir.ui.menu,name:menu_cash_flow_move_reports"
+msgid "Cash Flow Move Reports"
+msgstr "Informes moviments flux de caixa"
+
+msgctxt "model:ir.ui.menu,name:menu_cash_flow_move_update"
+msgid "Account Cash Flow Update"
+msgstr "Actualitza flux de caixa"
+
+msgctxt "wizard_button:account.cashflow.move.update,start,calculate:"
+msgid "Calculate"
+msgstr "Calcula"
+
+msgctxt "wizard_button:account.cashflow.move.update,start,end:"
+msgid "Cancel"
+msgstr "Cancel·la"
