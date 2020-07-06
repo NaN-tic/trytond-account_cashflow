@@ -5,7 +5,7 @@ from datetime import timedelta
 from sql.aggregate import Sum
 from sql import Window
 from trytond.model import ModelSQL, ModelView, fields
-from trytond.pyson import Bool, If, Eval, PYSONEncoder, Less
+from trytond.pyson import If, Eval, PYSONEncoder
 from trytond.wizard import (Wizard, StateView, StateAction, StateTransition,
     Button)
 from trytond.pool import Pool
@@ -31,10 +31,11 @@ class CashFlowMove(ModelSQL, ModelView):
         states={
             'invisible': ~Eval('party_required', False),
         }, depends=['party_required'])
-    account = fields.Many2One('account.account', 'Account', required=True)
+    account = fields.Many2One('account.account', 'Account')
     origin = fields.Reference('Origin', selection='get_origin', readonly=True,
         select=True)
-    system_computed = fields.Boolean('System Computed', readonly=True)
+    system_computed = fields.Boolean('System Computed', readonly=True,
+        help='Record computed by system')
     company = fields.Many2One('company.company', 'Company', required=True,
         domain=[
             ('id', If(Eval('context', {}).contains('company'), '=', '!='),
@@ -87,7 +88,7 @@ class CashFlowMove(ModelSQL, ModelView):
     def get_party_required(cls, cashes, name):
         res = dict((x.id, False) for x in cashes)
         for cash in cashes:
-            res[cash.id] = cash.account.party_required
+            res[cash.id] = cash.account.party_required if cash.account else False
         return res
 
     @classmethod
@@ -155,7 +156,6 @@ class CashFlowUpdate(Wizard):
             move.issue_date = self.start.date - timedelta(days=1)
             move.planned_date = self.start.date - timedelta(days=1)
             move.bank_account = account
-            move.account = account
             move.amount = account.balance
             move.system_computed = True
             move.company = account.company
