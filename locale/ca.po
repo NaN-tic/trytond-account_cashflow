@@ -111,6 +111,10 @@ msgctxt "field:bank.account,account:"
 msgid "Account"
 msgstr "Compte"
 
+msgctxt "help:account.cashflow.move,system_computed:"
+msgid "Record computed by system"
+msgstr "Registre calculat pel sistema"
+
 msgctxt "model:account.cashflow.line.forecast,name:"
 msgid "Cash Flow Line Forecast"
 msgstr "Previsió flux de caixa"
