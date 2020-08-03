@@ -5,7 +5,6 @@
     <field name="planned_date"/>
     <field name="issue_date"/>
     <field name="description"/>
-    <field name="company"/>
     <field name="bank_account"/>
     <field name="party"/>
     <field name="account"/>
@@ -13,4 +12,5 @@
     <field name="system_computed"/>
     <field name="amount"/>
     <field name="balance"/>
+    <field name="company" invisible="1"/>
 </tree>
