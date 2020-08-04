@@ -12,5 +12,5 @@
     <field name="system_computed"/>
     <field name="amount"/>
     <field name="balance"/>
-    <field name="company" invisible="1"/>
+    <field name="company" tree_invisible="1"/>
 </tree>
