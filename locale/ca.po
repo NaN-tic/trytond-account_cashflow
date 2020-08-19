@@ -162,15 +162,15 @@ msgctxt "model:ir.rule.group,name:rule_group_cash_flow_report"
 msgid "Cashflow Move"
 msgstr "Moviments flux de caixa"
 
+msgctxt "model:ir.ui.menu,name:menu_cash_flow"
+msgid "Cash Flow"
+msgstr "Flux de caixa"
+
 msgctxt "model:ir.ui.menu,name:menu_cash_flow_line_forecast"
 msgid "Cash Flow Line Forecast"
 msgstr "Previsió flux de caixa"
 
 msgctxt "model:ir.ui.menu,name:menu_cash_flow_move"
-msgid "Cash Flow Move"
-msgstr "Moviments flux de caixa"
-
-msgctxt "model:ir.ui.menu,name:menu_cash_flow_move_reports"
 msgid "Cash Flow Move"
 msgstr "Moviments flux de caixa"
 

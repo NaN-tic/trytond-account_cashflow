@@ -56,11 +56,11 @@
     </record>
 
     <!-- Menu Cash Flow Move & Cash Flow Move Reports -->
-    <menuitem parent="account.menu_account" id="menu_cash_flow_move"
-      name="Cash Flow Move" sequence="10"/>
+    <menuitem parent="account.menu_account" id="menu_cash_flow"
+      name="Cash Flow" sequence="90"/>
 
-    <menuitem parent="menu_cash_flow_move" action="act_cash_move_reports_form"
-      id="menu_cash_flow_move_reports" name="Cash Flow Move"/>
+    <menuitem parent="menu_cash_flow" action="act_cash_move_reports_form"
+      id="menu_cash_flow_move" name="Cash Flow Move" sequence="20"/>
 
     <!-- Wizard Update cash flow -->
     <record model="ir.action.wizard" id="act_account_cashflowmove_update">
@@ -74,7 +74,7 @@
         <field name="name">account_cashflow_move_update_start_form</field>
     </record>
 
-    <menuitem parent="menu_cash_flow_move" sequence="20"
+    <menuitem parent="menu_cash_flow" sequence="10"
         action="act_account_cashflowmove_update"
         id="menu_cash_flow_move_update"/>
 
@@ -138,7 +138,7 @@
         <field name="act_window" ref="act_cash_flow_line_forecast"/>
     </record>
 
-    <menuitem parent="menu_cash_flow_move" sequence="30"
+    <menuitem parent="menu_cash_flow" sequence="30"
         action="act_cash_flow_line_forecast"
         id="menu_cash_flow_line_forecast"/>
   </data>
