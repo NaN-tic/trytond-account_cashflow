@@ -107,6 +107,13 @@ class CashFlowMove(ModelSQL, ModelView):
             ('/tree', 'visual', If(Eval('planned_date_less_today'), 'danger', '')),
             ]
 
+    @classmethod
+    def copy(cls, moves, default=None):
+        if default is None:
+            default = {}
+        default.setdefault('system_computed', False)
+        return super().copy(moves, default)
+
 
 class CashFlowUpdateCalculate(ModelView):
     'Cash Flow Update'
@@ -142,7 +149,9 @@ class CashFlowUpdate(Wizard):
         Account = pool.get('account.account')
         BankAccount = pool.get('bank.account')
 
-        CashFlowMove.delete(CashFlowMove.search([('system_computed', '=', True)]))
+        CashFlowMove.delete(CashFlowMove.search([
+                    ('system_computed', '=', True),
+                    ]))
 
         bank_accounts_ids = [bank_account.account.id
             for bank_account in BankAccount.search([('account', '!=', None)])]
