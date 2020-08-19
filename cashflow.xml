@@ -16,7 +16,7 @@
     </record>
 
     <record model="ir.action.act_window" id="act_cash_move_reports_form">
-        <field name="name">Cash Flow Move Reports</field>
+        <field name="name">Cash Flow Move</field>
         <field name="res_model">account.cashflow.move</field>
     </record>
     <record model="ir.action.act_window.view" id="act_cash_flow_tree">
@@ -60,7 +60,7 @@
       name="Cash Flow Move" sequence="10"/>
 
     <menuitem parent="menu_cash_flow_move" action="act_cash_move_reports_form"
-      id="menu_cash_flow_move_reports" name="Cash Flow Move Reports"/>
+      id="menu_cash_flow_move_reports" name="Cash Flow Move"/>
 
     <!-- Wizard Update cash flow -->
     <record model="ir.action.wizard" id="act_account_cashflowmove_update">
