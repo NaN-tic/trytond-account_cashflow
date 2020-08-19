@@ -140,8 +140,8 @@ msgid "Cash Flow Line Forecast"
 msgstr "Previsió flux de caixa"
 
 msgctxt "model:ir.action,name:act_cash_move_reports_form"
-msgid "Cash Flow Move Reports"
-msgstr "Informes moviments flux de caixa"
+msgid "Cash Flow Move"
+msgstr "Moviments flux de caixa"
 
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_cash_move_reports_form_domain_all"
@@ -171,8 +171,8 @@ msgid "Cash Flow Move"
 msgstr "Moviments flux de caixa"
 
 msgctxt "model:ir.ui.menu,name:menu_cash_flow_move_reports"
-msgid "Cash Flow Move Reports"
-msgstr "Informes moviments flux de caixa"
+msgid "Cash Flow Move"
+msgstr "Moviments flux de caixa"
 
 msgctxt "model:ir.ui.menu,name:menu_cash_flow_move_update"
 msgid "Account Cash Flow Update"
