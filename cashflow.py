@@ -16,6 +16,20 @@ from trytond import backend
 __all__ = ['CashFlowMove', 'CashFlowUpdateCalculate', 'CashFlowUpdate',
     'CashFlowLineForecastContext', 'CashFlowLineForecast']
 
+# Danger field is exactly the same in both CashFlowMove and CashFlowLineForecast
+danger_field = fields.Function(fields.Boolean('Danger'), 'get_danger')
+
+@classmethod
+def get_danger_method(cls, cashes, name):
+    # PYSON LESS Date https://bugs.tryton.org/issue4879
+    Date = Pool().get('ir.date')
+    today = Date().today()
+    res = dict((x.id, False) for x in cashes)
+    for cash in cashes:
+        res[cash.id] = ((cash.planned_date < today)
+            and not cash.initial_balance)
+    return res
+
 
 class CashFlowMove(ModelSQL, ModelView):
     'Cash Flow Move'
@@ -36,14 +50,14 @@ class CashFlowMove(ModelSQL, ModelView):
         select=True)
     system_computed = fields.Boolean('System Computed', readonly=True,
         help='Record computed by system')
+    initial_balance = fields.Boolean('Initial Balance', readonly=True)
     company = fields.Many2One('company.company', 'Company', required=True,
         domain=[
             ('id', If(Eval('context', {}).contains('company'), '=', '!='),
                 Eval('context', {}).get('company', -1)),
             ],
         select=True)
-    planned_date_less_today = fields.Function(
-        fields.Boolean('Planned Date Less Today'), 'get_planned_date_less_today')
+    danger = danger_field
 
     @classmethod
     def __setup__(cls):
@@ -85,40 +99,34 @@ class CashFlowMove(ModelSQL, ModelView):
         return [('', '')] + [(m.model, m.name) for m in models]
 
     @classmethod
-    def get_party_required(cls, cashes, name):
-        res = dict((x.id, False) for x in cashes)
-        for cash in cashes:
-            res[cash.id] = cash.account.party_required if cash.account else False
-        return res
+    def get_party_required(self, name):
+        return self.account.party_required if self.account else None
 
-    @classmethod
-    def get_planned_date_less_today(cls, cashes, name):
-        # PYSON LESS Date https://bugs.tryton.org/issue4879
-        Date = Pool().get('ir.date')
-        today = Date().today()
-        res = dict((x.id, False) for x in cashes)
-        for cash in cashes:
-            res[cash.id] = cash.planned_date < today
-        return res
+    get_danger = get_danger_method
 
     @classmethod
     def view_attributes(cls):
         return [
-            ('/tree', 'visual', If(Eval('planned_date_less_today'), 'danger', '')),
+            ('/tree', 'visual', If(Eval('danger'), 'danger', '')),
             ]
 
     @classmethod
     def copy(cls, moves, default=None):
         if default is None:
             default = {}
+        else:
+            default = default.copy()
         default.setdefault('system_computed', False)
+        default.setdefault('initial_balance', False)
         return super().copy(moves, default)
 
 
 class CashFlowUpdateCalculate(ModelView):
     'Cash Flow Update'
     __name__ = 'account.cashflow.move.update.start'
-    date = fields.Date('Date')
+    date = fields.Date('Date', help='If set, payable or receivables with '
+        'maturity date prior to this maturity date will not be taken into '
+        'account even if they are not reconciled')
     invoices = fields.Boolean('Invoices')
 
     @staticmethod
@@ -167,11 +175,17 @@ class CashFlowUpdate(Wizard):
             move.bank_account = account
             move.amount = account.balance
             move.system_computed = True
+            move.initial_balance = True
             move.company = account.company
             moves.append(move)
 
-        for line in MoveLine.search(
-                [('maturity_date', '>=', self.start.date)]):
+        domain = [
+            ('maturity_date', '!=', None),
+            ('reconiliation', '=', None),
+            ]
+        if self.start.date:
+            domain += [('maturity_date', '>=', self.start.date)]
+        for line in MoveLine.search(domain):
             move = CashFlowMove()
             move.issue_date = line.date
             move.planned_date = line.maturity_date
@@ -224,6 +238,7 @@ class CashFlowLineForecast(ModelSQL, ModelView):
                 Eval('context', {}).get('company', -1)),
             ],
         select=True)
+    danger = danger_field
 
     @staticmethod
     def default_company():
@@ -256,6 +271,14 @@ class CashFlowLineForecast(ModelSQL, ModelView):
         models = Model.search([
             ('model', 'in', models)])
         return [('', '')] + [(m.model, m.name) for m in models]
+
+    get_danger = get_danger_method
+
+    @classmethod
+    def view_attributes(cls):
+        return [
+            ('/tree', 'visual', If(Eval('danger'), 'danger', '')),
+            ]
 
     @classmethod
     def table_query(cls):
