@@ -111,6 +111,8 @@ class CashFlowMove(ModelSQL, ModelView):
     def copy(cls, moves, default=None):
         if default is None:
             default = {}
+        else:
+            default = default.copy()
         default.setdefault('system_computed', False)
         return super().copy(moves, default)
 
