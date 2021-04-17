@@ -274,7 +274,7 @@ class CashFlowLineForecast(ModelSQL, ModelView):
         cash_flow_move_table = CashFlowMove.__table__()
 
         context = Transaction().context
-        if backend.name() == 'postgresql':
+        if backend.name == 'postgresql':
             w_columns = []
             if (context.get('cumulate_by_bank_account', False)):
                 w_columns.append(cash_flow_move_table.bank_account)
