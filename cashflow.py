@@ -187,8 +187,8 @@ class CashFlowUpdate(Wizard):
             move.company = line.move.company
             moves.append(move)
 
-        self.cash_flow_moves = CashFlowMove.create([
-            x._save_values for x in moves])
+        CashFlowMove.save(moves)
+        self.cash_flow_moves = moves
         return 'open_'
 
     def do_open_(self, action):
