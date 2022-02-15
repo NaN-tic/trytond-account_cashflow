@@ -31,16 +31,14 @@ class CashFlowMove(ModelSQL, ModelView):
         states={
             'invisible': ~Eval('party_required', False),
         }, depends=['party_required'])
-    account = fields.Many2One('account.account', 'Account')
+    account = fields.Many2One('account.account', 'Account', domain=[
+            ('company', '=', Eval('company')),
+            ], depends=['company'])
     origin = fields.Reference('Origin', selection='get_origin', readonly=True,
         select=True)
     system_computed = fields.Boolean('System Computed', readonly=True,
         help='Record computed by system')
     company = fields.Many2One('company.company', 'Company', required=True,
-        domain=[
-            ('id', If(Eval('context', {}).contains('company'), '=', '!='),
-                Eval('context', {}).get('company', -1)),
-            ],
         select=True)
     planned_date_less_today = fields.Function(
         fields.Boolean('Planned Date Less Today'), 'get_planned_date_less_today')
