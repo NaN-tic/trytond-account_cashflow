@@ -81,12 +81,14 @@
     <!-- Access Rules Wizard CashFlowUpdate -->
 
     <record model="ir.rule.group" id="rule_group_cash_flow_report">
-        <field name="name">Cashflow Move</field>
+        <field name="name">User in companies</field>
         <field name="model" search="[('model', '=', 'account.cashflow.move')]"/>
         <field name="global_p" eval="True"/>
     </record>
     <record model="ir.rule" id="rule_cash_flow_report">
-        <field name="domain" eval="[('company', '=', Eval('user', {}).get('company', None))]" pyson="1"/>
+        <field name="domain"
+            eval="[('company', 'in', Eval('companies', []))]"
+            pyson="1"/>
         <field name="rule_group" ref="rule_group_cash_flow_report"/>
     </record>
 
@@ -136,6 +138,18 @@
         <field name="sequence" eval="30"/>
         <field name="view" ref="cash_flow_line_view_amount_graph"/>
         <field name="act_window" ref="act_cash_flow_line_forecast"/>
+    </record>
+
+    <record model="ir.rule.group" id="rule_group_cash_flow_line">
+        <field name="name">User in companies</field>
+        <field name="model" search="[('model', '=', 'account.cashflow.line.forecast')]"/>
+        <field name="global_p" eval="True"/>
+    </record>
+    <record model="ir.rule" id="rule_cash_flow_line">
+        <field name="domain"
+            eval="[('company', 'in', Eval('companies', []))]"
+            pyson="1"/>
+        <field name="rule_group" ref="rule_group_cash_flow_line"/>
     </record>
 
     <menuitem parent="menu_cash_flow" sequence="30"
