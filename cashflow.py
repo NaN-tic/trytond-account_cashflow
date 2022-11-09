@@ -38,12 +38,10 @@ class CashFlowMove(ModelSQL, ModelView):
     account = fields.Many2One('account.account', 'Account', domain=[
             ('company', '=', Eval('company')),
             ], depends=['company'])
-    origin = fields.Reference('Origin', selection='get_origin', readonly=True,
-        select=True)
+    origin = fields.Reference('Origin', selection='get_origin', readonly=True)
     system_computed = fields.Boolean('System Computed', readonly=True,
         help='Record computed by system')
-    company = fields.Many2One('company.company', 'Company', required=True,
-        select=True)
+    company = fields.Many2One('company.company', 'Company', required=True)
     planned_date_less_today = fields.Function(
         fields.Boolean('Planned Date Less Today'), 'get_planned_date_less_today')
 
@@ -221,8 +219,7 @@ class CashFlowLineForecast(ModelSQL, ModelView):
             },
         depends=['company'])
     account = fields.Many2One('account.account', 'Account')
-    origin = fields.Reference('Origin', selection='get_origin', readonly=True,
-        select=True)
+    origin = fields.Reference('Origin', selection='get_origin', readonly=True)
     system_computed = fields.Boolean('System Computed')
     amount = fields.Numeric('Amount', digits=(16, 2))
     balance = fields.Numeric('Balance', digits=(16, 2))
@@ -230,8 +227,7 @@ class CashFlowLineForecast(ModelSQL, ModelView):
         domain=[
             ('id', If(Eval('context', {}).contains('company'), '=', '!='),
                 Eval('context', {}).get('company', -1)),
-            ],
-        select=True)
+            ])
 
     @staticmethod
     def default_company():
