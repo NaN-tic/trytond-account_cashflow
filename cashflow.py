@@ -32,11 +32,11 @@ class CashFlowMove(ModelSQL, ModelView):
             'invisible': ~Eval('party_required', False),
         },
         context={
-            'company': Eval('company'),
+            'company': Eval('company', -1),
             },
         depends=['party_required', 'company'])
     account = fields.Many2One('account.account', 'Account', domain=[
-            ('company', '=', Eval('company')),
+            ('company', '=', Eval('company', -1)),
             ], depends=['company'])
     origin = fields.Reference('Origin', selection='get_origin', readonly=True)
     system_computed = fields.Boolean('System Computed', readonly=True,
@@ -215,7 +215,7 @@ class CashFlowLineForecast(ModelSQL, ModelView):
     bank_account = fields.Many2One('account.account', 'Bank Account')
     party = fields.Many2One('party.party', "Party",
         context={
-            'company': Eval('company'),
+            'company': Eval('company', -1),
             },
         depends=['company'])
     account = fields.Many2One('account.account', 'Account')
