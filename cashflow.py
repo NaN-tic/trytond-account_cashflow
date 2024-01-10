@@ -37,7 +37,7 @@ class CashFlowMove(ModelSQL, ModelView):
         depends=['party_required', 'company'])
     account = fields.Many2One('account.account', 'Account', domain=[
             ('company', '=', Eval('company', -1)),
-            ], depends=['company'])
+            ])
     origin = fields.Reference('Origin', selection='get_origin', readonly=True)
     system_computed = fields.Boolean('System Computed', readonly=True,
         help='Record computed by system')
