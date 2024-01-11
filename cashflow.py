@@ -34,7 +34,7 @@ class CashFlowMove(ModelSQL, ModelView):
         context={
             'company': Eval('company', -1),
             },
-        depends=['party_required', 'company'])
+        depends=['company'])
     account = fields.Many2One('account.account', 'Account', domain=[
             ('company', '=', Eval('company', -1)),
             ])
