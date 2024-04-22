@@ -115,7 +115,7 @@
         <field name="res_model">account.cashflow.line.forecast</field>
         <field name="context_model">account.cashflow.line.forecast.context</field>
         <field name="search_value"
-            eval="[('planned_date', '>=', DateTime(hour=0, minute=0, second=0, microsecond=0))]"
+            eval="[('planned_date', '>=', Date())]"
             pyson="1"/>
     </record>
 
