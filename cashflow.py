@@ -148,32 +148,30 @@ class CashFlowUpdate(Wizard):
         pool = Pool()
         MoveLine = pool.get('account.move.line')
         CashFlowMove = pool.get('account.cashflow.move')
-        Account = pool.get('account.account')
-        BankAccount = pool.get('bank.account')
+        BankAccountCashflow = pool.get('bank.account.cashflow')
 
         CashFlowMove.delete(CashFlowMove.search([
                     ('system_computed', '=', True),
                     ]))
 
-        bank_accounts_ids = [bank_account.account.id
-            for bank_account in BankAccount.search([('account', '!=', None)])]
-        with Transaction().set_context():
-            accounts = Account.search([('id', 'in', bank_accounts_ids)])
+        # TODO in case have many records in bank.account related at the same account.account: create cashflow same account?
+        cashflow_accounts = BankAccountCashflow.search([('company', '=', Transaction().context.get('company', -1))])
 
         moves = []
 
-        for account in accounts:
+        for cashflow_account in cashflow_accounts:
             move = CashFlowMove()
             move.issue_date = self.start.date - timedelta(days=1)
             move.planned_date = self.start.date - timedelta(days=1)
-            move.bank_account = account
-            move.amount = account.balance
+            move.bank_account = cashflow_account.account
+            move.amount = cashflow_account.account.balance
             move.system_computed = True
-            move.company = account.company
+            move.company = cashflow_account.account.company
             moves.append(move)
 
-        for line in MoveLine.search(
-                [('maturity_date', '>=', self.start.date)]):
+        for line in MoveLine.search([
+                ('maturity_date', '>=', self.start.date),
+                ]):
             move = CashFlowMove()
             move.issue_date = line.date
             move.planned_date = line.maturity_date
