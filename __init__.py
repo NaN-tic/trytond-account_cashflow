@@ -8,6 +8,7 @@ from . import cashflow
 def register():
     Pool.register(
         bank.BankAccount,
+        bank.BankAccountCashflow,
         cashflow.CashFlowMove,
         cashflow.CashFlowUpdateCalculate,
         cashflow.CashFlowLineForecast,

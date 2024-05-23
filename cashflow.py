@@ -148,20 +148,19 @@ class CashFlowUpdate(Wizard):
         pool = Pool()
         MoveLine = pool.get('account.move.line')
         CashFlowMove = pool.get('account.cashflow.move')
-        Account = pool.get('account.account')
-        BankAccount = pool.get('bank.account')
+        BankAccountCashflow = pool.get('bank.account.cashflow')
 
         CashFlowMove.delete(CashFlowMove.search([
                     ('system_computed', '=', True),
                     ]))
 
-        bank_accounts_ids = [bank_account.account.id
-            for bank_account in BankAccount.search([('account', '!=', None)])]
-        with Transaction().set_context():
-            accounts = Account.search([('id', 'in', bank_accounts_ids)])
+        cashflow_accounts = BankAccountCashflow.search([
+            ('company', '=', Transaction().context.get('company', -1)),
+            ('bank_account.active', '=', True),
+            ])
+        accounts = set([c.account for c in cashflow_accounts])
 
         moves = []
-
         for account in accounts:
             move = CashFlowMove()
             move.issue_date = self.start.date - timedelta(days=1)
@@ -172,8 +171,9 @@ class CashFlowUpdate(Wizard):
             move.company = account.company
             moves.append(move)
 
-        for line in MoveLine.search(
-                [('maturity_date', '>=', self.start.date)]):
+        for line in MoveLine.search([
+                ('maturity_date', '>=', self.start.date),
+                ]):
             move = CashFlowMove()
             move.issue_date = line.date
             move.planned_date = line.maturity_date
