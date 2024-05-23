@@ -158,17 +158,17 @@ class CashFlowUpdate(Wizard):
             ('company', '=', Transaction().context.get('company', -1)),
             ('bank_account.active', '=', True),
             ])
+        accounts = set([c.account for c in cashflow_accounts])
 
         moves = []
-
-        for cashflow_account in cashflow_accounts:
+        for account in accounts:
             move = CashFlowMove()
             move.issue_date = self.start.date - timedelta(days=1)
             move.planned_date = self.start.date - timedelta(days=1)
-            move.bank_account = cashflow_account.account
-            move.amount = cashflow_account.account.balance
+            move.bank_account = account
+            move.amount = account.balance
             move.system_computed = True
-            move.company = cashflow_account.account.company
+            move.company = account.company
             moves.append(move)
 
         for line in MoveLine.search([
