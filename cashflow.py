@@ -154,8 +154,10 @@ class CashFlowUpdate(Wizard):
                     ('system_computed', '=', True),
                     ]))
 
-        # TODO in case have many records in bank.account related at the same account.account: create cashflow same account?
-        cashflow_accounts = BankAccountCashflow.search([('company', '=', Transaction().context.get('company', -1))])
+        cashflow_accounts = BankAccountCashflow.search([
+            ('company', '=', Transaction().context.get('company', -1)),
+            ('bank_account.active', '=', True),
+            ])
 
         moves = []
 

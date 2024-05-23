@@ -7,7 +7,7 @@ from trytond.modules.company.model import (
 from trytond.transaction import Transaction
 from trytond import backend
 from sql import Column, Null
-
+from trytond.pyson import Eval
 
 account = fields.Many2One('account.account', 'Account')
 
@@ -15,6 +15,8 @@ account = fields.Many2One('account.account', 'Account')
 class BankAccount(CompanyMultiValueMixin, metaclass=PoolMeta):
     __name__ = 'bank.account'
     account = fields.MultiValue(account)
+    accounts = fields.One2Many(
+        'bank.account.cashflow', 'bank_account', "Accounts")
 
     @classmethod
     def multivalue_model(cls, field):
@@ -27,6 +29,12 @@ class BankAccount(CompanyMultiValueMixin, metaclass=PoolMeta):
 class BankAccountCashflow(ModelSQL, CompanyValueMixin):
     "Bank Account Cashflow"
     __name__ = 'bank.account.cashflow'
+    bank_account = fields.Many2One(
+        'bank.account', "Bank Account", ondelete='CASCADE',
+        context={
+            'company': Eval('company', -1),
+            },
+        depends={'company'})
     account = account
 
     @classmethod
@@ -54,8 +62,8 @@ class BankAccountCashflow(ModelSQL, CompanyValueMixin):
                     'write_uid', 'write_date',
                     'account']
                 query = bank_account.join(account, condition=account.id == bank_account.account).select(
-                    *[Column(bank_account, c) for c in columns] + [Column(account, 'company')],
+                    *[Column(bank_account, c) for c in columns] + [Column(account, 'company'), Column(bank_account, 'id')],
                     where=bank_account.account != Null)
                 cursor.execute(*sql_table.insert(
-                        columns=[Column(sql_table, c) for c in columns+['company']],
+                        columns=[Column(sql_table, c) for c in columns+['company', 'bank_account']],
                         values=query))
