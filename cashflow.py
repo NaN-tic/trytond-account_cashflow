@@ -82,7 +82,7 @@ class CashFlowMove(ModelSQL, ModelView):
         models = cls._get_origin()
         models = Model.search([
             ('name', 'in', models)])
-        return [('', '')] + [(m.model, m.name) for m in models]
+        return [('', '')] + [(m.name, m.string) for m in models]
 
     @classmethod
     def get_party_required(cls, cashes, name):
@@ -259,7 +259,7 @@ class CashFlowLineForecast(ModelSQL, ModelView):
         models = cls._get_origin()
         models = Model.search([
             ('name', 'in', models)])
-        return [('', '')] + [(m.model, m.name) for m in models]
+        return [('', '')] + [(m.name, m.string) for m in models]
 
     @classmethod
     def table_query(cls):
