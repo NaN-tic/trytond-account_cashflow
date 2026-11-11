@@ -146,4 +146,14 @@
         action="act_cash_flow_line_forecast"
         id="menu_cash_flow_line_forecast"/>
   </data>
+    <data>
+        <record model="ir.action-res.group" id="cashflow_update_group_account">
+            <field name="action" ref="act_account_cashflowmove_update"/>
+            <field name="group" ref="account.group_account"/>
+        </record>
+        <record model="ir.action-res.group" id="cashflow_update_group_account_admin">
+            <field name="action" ref="act_account_cashflowmove_update"/>
+            <field name="group" ref="account.group_account_admin"/>
+        </record>
+    </data>
 </tryton>
